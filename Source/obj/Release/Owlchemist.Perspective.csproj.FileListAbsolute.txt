@@ -1,0 +1,4 @@
+C:\Games\Steam\steamapps\common\RimWorld\Development\perspective-buildings\Content\Assemblies\Perspective.dll
+C:\Games\Steam\steamapps\common\RimWorld\Development\perspective-buildings\Source\obj\Release\Owlchemist.Perspective.csproj.AssemblyReference.cache
+C:\Games\Steam\steamapps\common\RimWorld\Development\perspective-buildings\Source\obj\Release\Owlchemist.Perspective.csproj.CoreCompileInputs.cache
+C:\Games\Steam\steamapps\common\RimWorld\Development\perspective-buildings\Source\obj\Release\Perspective.dll
