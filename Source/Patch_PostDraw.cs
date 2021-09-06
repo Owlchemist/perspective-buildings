@@ -8,10 +8,13 @@ namespace Perspective
     [HarmonyPatch(typeof(Graphic), "Print")]
 	public class Patch_PostDraw
 	{
+        static Vector3 zero = new Vector3(0,0,0);
         //This could probably be replaced by a transpiler if you want to get fancy. Current method is a copy-modification. Ugly, but it'll do for now. Maybe revisit when we got a better handle things.
         static bool Prefix(ref Thing thing, ref Graphic __instance, SectionLayer layer, float extraRotation)
 		{
-            if (thing.TryGetComp<CompOffsetter>() != null && thing.TryGetComp<CompOffsetter>().currentOffset != Vector3.zero && (thing.def.drawerType == DrawerType.MapMeshOnly || thing.def.drawerType == DrawerType.MapMeshAndRealTime))
+            var comp = thing.TryGetComp<CompOffsetter>();
+            //This only applies to things with offset components, and the component must be used (not zero), and the drawtype must be mesh.
+            if (comp != null && (comp.currentOffset != zero || comp.mirrored) && (thing.def.drawerType == DrawerType.MapMeshOnly || thing.def.drawerType == DrawerType.MapMeshAndRealTime))
             {
                 Vector2 size;
                 bool drawRotated;
@@ -25,13 +28,16 @@ namespace Perspective
                     if (!thing.Rotation.IsHorizontal) size = __instance.drawSize;
                     else size = __instance.drawSize.Rotated();
 
-                    drawRotated = ((thing.Rotation == Rot4.West && __instance.WestFlipped) || (thing.Rotation == Rot4.East && __instance.EastFlipped));
+                    drawRotated = (thing.Rotation == Rot4.West && __instance.WestFlipped) || (thing.Rotation == Rot4.East && __instance.EastFlipped);
                 }
+                //Check mirrored bool
+                if (comp.mirrored) drawRotated = true;
+
                 float num = AngleFromRot(__instance, thing.Rotation) + extraRotation;
 
                 if (drawRotated && __instance.data != null) num += __instance.data.flipExtraRotation;
 
-                Vector3 center = thing.TrueCenter() + __instance.DrawOffset(thing.Rotation) + thing.TryGetComp<CompOffsetter>().currentOffset;
+                Vector3 center = thing.TrueCenter() + __instance.DrawOffset(thing.Rotation) + comp.currentOffset;
                 Material mat = __instance.MatAt(thing.Rotation, thing);
                 Vector2[] uvs;
                 Color32 color;
@@ -43,10 +49,9 @@ namespace Perspective
                     color,
                     color
                 }, 0.01f, 0f);
-                if (__instance.ShadowGraphic != null && thing != null)
-                {
-                    __instance.ShadowGraphic.Print(layer, thing, 0f);
-                }
+
+                //Add shadow
+                if (__instance.ShadowGraphic != null && thing != null) __instance.ShadowGraphic.Print(layer, thing, 0f);
 
                 return false;
             }

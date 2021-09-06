@@ -14,6 +14,9 @@ namespace Perspective
             var dd = DefDatabase<ThingDef>.AllDefs.Where(x => x.category == ThingCategory.Building && x.graphicData !=null && !x.graphicData.Linked && x.graphicData.linkFlags == LinkFlags.None && x.useHitPoints).ToList();
             foreach (var thingDef in dd)
             {
+                //Special exceptions
+                if (thingDef.GetCompProperties<CompProperties_Power>() != null && thingDef.GetCompProperties<CompProperties_Power>().basePowerConsumption < 0) continue;
+
                 //Add comp list if missing
                 if (thingDef.comps == null) thingDef.comps = new List<CompProperties>();
 
