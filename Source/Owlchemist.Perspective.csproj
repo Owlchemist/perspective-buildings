@@ -46,8 +46,10 @@
   <ItemGroup>
     <Compile Include="CompOffsetter.cs" />
     <Compile Include="CompProperties_Offsetter.cs" />
+    <Compile Include="DefModExtension_Ignore.cs" />
     <Compile Include="Patch_DrawAt.cs" />
-    <Compile Include="Patch_PostDraw.cs" />
+    <Compile Include="Patch_Print.cs" />
+    <Compile Include="Patch_ShadowPrint.cs" />
     <Compile Include="Patch_DefGenerator.cs" />
     <Compile Include="Mod_Perspective.cs" />
   </ItemGroup>

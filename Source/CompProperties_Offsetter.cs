@@ -7,8 +7,6 @@ namespace Perspective
 	public class CompProperties_Offsetter : CompProperties
 	{
       public List<Vector3> offsets;
-      public bool ignore = false;
-      public bool mirror = true;
       public CompProperties_Offsetter()
       {
          this.compClass = typeof(CompOffsetter);

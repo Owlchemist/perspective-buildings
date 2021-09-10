@@ -13,5 +13,6 @@ namespace Perspective
 		}
 
 		public static List<Vector3> standardOffsets = new List<Vector3>() { new Vector3(0,0,0.2f), new Vector3(0,0,-0.2f) };
+		public static Vector3 zero = new Vector3(0,0,0);
     }
 }

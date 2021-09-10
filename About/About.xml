@@ -15,4 +15,7 @@
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 		</li>
 	</modDependencies>
+	<loadAfter>
+		<li>owlchemist.wallutilities</li>
+	</loadAfter>
 </ModMetaData>

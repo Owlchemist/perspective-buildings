@@ -6,15 +6,14 @@ using RimWorld;
 namespace Perspective
 {
     [HarmonyPatch(typeof(Graphic), "Print")]
-	public class Patch_PostDraw
+	public class Patch_Print
 	{
-        static Vector3 zero = new Vector3(0,0,0);
         //This could probably be replaced by a transpiler if you want to get fancy. Current method is a copy-modification. Ugly, but it'll do for now. Maybe revisit when we got a better handle things.
         static bool Prefix(ref Thing thing, ref Graphic __instance, SectionLayer layer, float extraRotation)
 		{
             var comp = thing.TryGetComp<CompOffsetter>();
             //This only applies to things with offset components, and the component must be used (not zero), and the drawtype must be mesh.
-            if (comp != null && (comp.currentOffset != zero || comp.mirrored) && (thing.def.drawerType == DrawerType.MapMeshOnly || thing.def.drawerType == DrawerType.MapMeshAndRealTime))
+            if (comp != null && (comp.currentOffset != Mod_Perspective.zero || comp.mirrored) && (thing.def.drawerType == DrawerType.MapMeshOnly || thing.def.drawerType == DrawerType.MapMeshAndRealTime))
             {
                 Vector2 size;
                 bool drawRotated;
@@ -62,13 +61,8 @@ namespace Perspective
 		{
 			if (graphic.ShouldDrawRotated)
 			{
-				float num = rot.AsAngle;
-				num += graphic.DrawRotatedExtraAngleOffset;
-				if ((rot == Rot4.West && graphic.WestFlipped) || (rot == Rot4.East && graphic.EastFlipped))
-				{
-					num += 180f;
-				}
-				return num;
+				float num = rot.AsAngle + graphic.DrawRotatedExtraAngleOffset;
+				if ((rot == Rot4.West && graphic.WestFlipped) || (rot == Rot4.East && graphic.EastFlipped)) return 180f + num;
 			}
 			return 0f;
 		}
