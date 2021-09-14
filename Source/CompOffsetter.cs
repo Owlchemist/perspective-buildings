@@ -22,6 +22,13 @@ namespace Perspective
 			base.Initialize(props);
 			if (this.parent.def.HasModExtension<Mirror>()) this.mirrorOveride = this.parent.def.GetModExtension<Mirror>();
 			if (this.parent.def.HasModExtension<Ignore>() && this.parent.def.GetModExtension<Ignore>().ignore) this.props = null;
+			Mod_Perspective.offsetRegistry.Add(this.parent.GetHashCode(), this);
+		}
+
+		public override void PostDeSpawn(Map map)
+		{
+			Mod_Perspective.offsetRegistry.Remove(this.parent.GetHashCode());
+			base.PostDeSpawn(map);
 		}
 
 		public override void PostExposeData()
@@ -32,6 +39,8 @@ namespace Perspective
 				Scribe_Values.Look<bool>(ref this.mirrored, "mirrored", false, false);
 				Scribe_Values.Look<int>(ref this.index, "index", 0, false);
 				Scribe_Values.Look<Vector3>(ref this.currentOffset, "currentOffset", new Vector3(0,0,0), false);
+
+				Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
 			}
 		}
 
@@ -54,6 +63,8 @@ namespace Perspective
 			{
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
+
+			Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public void SetMirroredState()
@@ -65,6 +76,8 @@ namespace Perspective
 			{
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
+
+			Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public override IEnumerable<Gizmo> CompGetGizmosExtra()

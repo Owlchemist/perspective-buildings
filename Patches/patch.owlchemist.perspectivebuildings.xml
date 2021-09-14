@@ -18,7 +18,14 @@
 			<!-- Give chairs 4-way offset -->
 			<li Class="PatchOperationAdd">
 				<success>Always</success>
-				<xpath>/Defs/ThingDef[building and building[isSittable="true"]]/comps[not(li[@Class="Perspective.CompProperties_Offsetter"])]</xpath>
+				<xpath>/Defs/ThingDef[(building and building[isSittable="true"]) or defName="EndTable"][not(comps)]</xpath>
+				<value>
+					<comps />
+				</value>
+			</li>
+			<li Class="PatchOperationAdd">
+				<success>Always</success>
+				<xpath>/Defs/ThingDef[(building and building[isSittable="true"]) or defName="EndTable"]/comps[not(li[@Class="Perspective.CompProperties_Offsetter"])]</xpath>
 				<value>
 					<li Class="Perspective.CompProperties_Offsetter">
 						<offsets>

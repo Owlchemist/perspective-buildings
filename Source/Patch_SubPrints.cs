@@ -11,9 +11,12 @@ namespace Perspective
 	{
         static Vector3 Postfix(Vector3 __result, Pawn ___pawn)
 		{
-			var comp = ___pawn.CurrentBed()?.GetComp<CompOffsetter>();
-
-			if (comp != null && comp.currentOffset != Mod_Perspective.zero) __result += comp.currentOffset;
+            CompOffsetter comp;
+            var bed = ___pawn.CurrentBed();
+            if (bed != null && Mod_Perspective.offsetRegistry.TryGetValue(bed.GetHashCode(), out comp) && comp != null)
+            {
+                if (comp != null && comp.currentOffset != Mod_Perspective.zero) __result += comp.currentOffset;
+            }
             return __result;
         }
     }
