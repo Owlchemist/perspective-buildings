@@ -1,13 +1,15 @@
 using Verse;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Perspective
 {
-	public class Ignore : DefModExtension
+	public class Offsetter : DefModExtension 
 	{
-		public bool ignore = true;
-	}
-	public class Mirror : DefModExtension 
-	{
-		public bool mirror = false;
+		public Override mirror = Override.Normal;
+		public Override ignore = Override.Normal;
+		public List<Vector3> offsets;
+
+		public enum Override {Normal,True,False}
 	}
 }

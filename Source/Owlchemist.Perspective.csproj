@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompOffsetter.cs" />
-    <Compile Include="CompProperties_Offsetter.cs" />
     <Compile Include="DefModExtension_Ignore.cs" />
     <Compile Include="Patch_Print.cs" />
     <Compile Include="Patch_SubPrints.cs" />

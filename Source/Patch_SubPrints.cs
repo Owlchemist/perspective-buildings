@@ -13,10 +13,7 @@ namespace Perspective
 		{
             CompOffsetter comp;
             var bed = ___pawn.CurrentBed();
-            if (bed != null && Mod_Perspective.offsetRegistry.TryGetValue(bed.GetHashCode(), out comp) && comp != null)
-            {
-                if (comp != null && comp.currentOffset != Mod_Perspective.zero) __result += comp.currentOffset;
-            }
+            if (bed != null && Mod_Perspective.offsetRegistry.TryGetValue(bed.thingIDNumber, out comp) && comp != null && comp.isOffset) __result += comp.currentOffset;
             return __result;
         }
     }

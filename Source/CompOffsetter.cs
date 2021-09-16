@@ -9,25 +9,20 @@ namespace Perspective
 {
 	public class CompOffsetter : ThingComp
 	{
-		public CompProperties_Offsetter Props
-		{
-			get
-			{
-				return (CompProperties_Offsetter)this.props;
-			}
-		}
+		public Offsetter Props;
 
 		public override void Initialize(CompProperties props)
 		{
 			base.Initialize(props);
-			if (this.parent.def.HasModExtension<Mirror>()) this.mirrorOveride = this.parent.def.GetModExtension<Mirror>();
-			if (this.parent.def.HasModExtension<Ignore>() && this.parent.def.GetModExtension<Ignore>().ignore) this.props = null;
-			Mod_Perspective.offsetRegistry.Add(this.parent.GetHashCode(), this);
+			Mod_Perspective.offsetRegistry.Add(this.parent.thingIDNumber, this);
+
+			//Modextensoins will be impersonating CompProperties, basically
+			if (this.parent.def.HasModExtension<Offsetter>()) Props = this.parent.def.GetModExtension<Offsetter>();
 		}
 
 		public override void PostDeSpawn(Map map)
 		{
-			Mod_Perspective.offsetRegistry.Remove(this.parent.GetHashCode());
+			Mod_Perspective.offsetRegistry.Remove(this.parent.thingIDNumber);
 			base.PostDeSpawn(map);
 		}
 
@@ -40,7 +35,8 @@ namespace Perspective
 				Scribe_Values.Look<int>(ref this.index, "index", 0, false);
 				Scribe_Values.Look<Vector3>(ref this.currentOffset, "currentOffset", new Vector3(0,0,0), false);
 
-				Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
+				Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
+				if (currentOffset != Mod_Perspective.zero) isOffset = true;
 			}
 		}
 
@@ -50,10 +46,15 @@ namespace Perspective
 			if (resetNext)
 			{
 				currentOffset = new Vector3(0,0,0);
+				isOffset = false;
 				resetNext = false;
 				index = 0;
 			}
-			else currentOffset = Props.offsets[index++];
+			else
+			{
+				currentOffset = Props.offsets[index++];
+				isOffset = true;
+			}
 
 			//Reset the index if we've reached the end
 			if (index > Props.offsets.Count() - 1) resetNext = true;
@@ -64,7 +65,7 @@ namespace Perspective
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
 
-			Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
+			Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public void SetMirroredState()
@@ -77,7 +78,7 @@ namespace Perspective
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
 
-			Mod_Perspective.offsetRegistry[this.parent.GetHashCode()] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
+			Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public override IEnumerable<Gizmo> CompGetGizmosExtra()
@@ -94,8 +95,7 @@ namespace Perspective
                 };
 
                 // Mirror
-                if ((!this.parent.def.rotatable && (mirrorOveride == null || (mirrorOveride != null && mirrorOveride.mirror))) || 
-				(mirrorOveride != null && mirrorOveride.mirror))
+                if ((!this.parent.def.rotatable && this.Props.mirror != Offsetter.Override.False) || (this.parent.def.rotatable && this.Props.mirror == Offsetter.Override.True))
                 {
                     yield return new Command_Action()
                     {
@@ -110,7 +110,7 @@ namespace Perspective
 		private bool resetNext = false;
 		private int index = 0;
         public Vector3 currentOffset = new Vector3(0,0,0);
+		public bool isOffset = false;
 		public bool mirrored = false;
-		private Mirror mirrorOveride;
 	}
 }
