@@ -4,6 +4,7 @@ using HarmonyLib;
 using System.Linq;
 using System.Collections.Generic;
 using static Perspective.Offsetter.Override;
+using static Perspective.ResourceBank;
  
 namespace Perspective
 {
@@ -30,14 +31,14 @@ namespace Perspective
                     }
                     else
                     {
-                        if (modX.offsets == null) modX.offsets = Mod_Perspective.standardOffsets;
+                        if (modX.offsets == null) modX.offsets = standardOffsets;
                     }
                 }
                 else
                 {
                     //Add modX list if missing
                     if (def.modExtensions == null) def.modExtensions = new List<DefModExtension>();
-                    def.modExtensions.Add(new Offsetter(){offsets = Mod_Perspective.standardOffsets});
+                    def.modExtensions.Add(new Offsetter(){offsets = standardOffsets});
                 }
 
                 //Add component

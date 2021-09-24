@@ -1,8 +1,7 @@
 using HarmonyLib;
 using Verse;
-using UnityEngine;
-using System.Collections.Generic;
 using RimWorld.Planet;
+using static Perspective.ResourceBank;
 
 namespace Perspective
 {
@@ -12,10 +11,6 @@ namespace Perspective
 		{
 			new Harmony(this.Content.PackageIdPlayerFacing).PatchAll();
 		}
-
-		public static List<Vector3> standardOffsets = new List<Vector3>() { new Vector3(0,0,0.2f), new Vector3(0,0,-0.2f) };
-		public static Vector3 zero = new Vector3(0,0,0);
-		public static Dictionary<int,CompOffsetter> offsetRegistry = new Dictionary<int, CompOffsetter>();
     }
 
 	public class WorldComponent_OffsetRegistry : WorldComponent
@@ -25,7 +20,7 @@ namespace Perspective
 		}
 		public override void FinalizeInit()
 		{
-			Mod_Perspective.offsetRegistry.Clear();
+			offsetRegistry.Clear();
 			base.FinalizeInit();
 		}
 	}

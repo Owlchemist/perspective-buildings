@@ -4,6 +4,8 @@ using Verse;
 using Verse.Sound;
 using System.Linq;
 using RimWorld;
+using static Perspective.ResourceBank;
+
 
 namespace Perspective
 {
@@ -14,7 +16,6 @@ namespace Perspective
 		public override void Initialize(CompProperties props)
 		{
 			base.Initialize(props);
-			Mod_Perspective.offsetRegistry.Add(this.parent.thingIDNumber, this);
 
 			//Modextensoins will be impersonating CompProperties, basically
 			if (this.parent.def.HasModExtension<Offsetter>()) Props = this.parent.def.GetModExtension<Offsetter>();
@@ -22,7 +23,7 @@ namespace Perspective
 
 		public override void PostDeSpawn(Map map)
 		{
-			Mod_Perspective.offsetRegistry.Remove(this.parent.thingIDNumber);
+			offsetRegistry.Remove(this.parent.thingIDNumber);
 			base.PostDeSpawn(map);
 		}
 
@@ -31,12 +32,22 @@ namespace Perspective
 			if (Props != null)
 			{
 				Scribe_Values.Look<bool>(ref this.resetNext, "resetNext", false, false);
-				Scribe_Values.Look<bool>(ref this.mirrored, "mirrored", false, false);
+				Scribe_Values.Look<bool>(ref this.isMirrored, "mirrored", false, false);
 				Scribe_Values.Look<int>(ref this.index, "index", 0, false);
 				Scribe_Values.Look<Vector3>(ref this.currentOffset, "currentOffset", new Vector3(0,0,0), false);
 
-				Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
-				if (currentOffset != Mod_Perspective.zero) isOffset = true;
+				UpdateRegistry();
+				if (currentOffset != zero) isOffset = true;
+			}
+		}
+
+		public void UpdateRegistry()
+		{
+			offsetRegistry.Remove(this.parent.thingIDNumber);
+
+			if (isMirrored || currentOffset != zero)
+			{
+				if (!offsetRegistry.ContainsKey(this.parent.thingIDNumber)) offsetRegistry.Add(this.parent.thingIDNumber, this);
 			}
 		}
 
@@ -45,7 +56,7 @@ namespace Perspective
 			SoundDefOf.Click.PlayOneShotOnCamera(null);
 			if (resetNext)
 			{
-				currentOffset = new Vector3(0,0,0);
+				currentOffset = zero;
 				isOffset = false;
 				resetNext = false;
 				index = 0;
@@ -59,26 +70,22 @@ namespace Perspective
 			//Reset the index if we've reached the end
 			if (index > Props.offsets.Count() - 1) resetNext = true;
 
-			//Special handling if this is a not a realtime drawer
+			UpdateRegistry();
 			if (this.parent.def.drawerType == DrawerType.MapMeshOnly || this.parent.def.drawerType == DrawerType.MapMeshAndRealTime)
 			{
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
-
-			Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public void SetMirroredState()
         {
 			SoundDefOf.Click.PlayOneShotOnCamera(null);
-			mirrored ^= true;
-			//Special handling if this is a not a realtime drawer
+			isMirrored ^= true;
+			UpdateRegistry();
 			if (this.parent.def.drawerType == DrawerType.MapMeshOnly || this.parent.def.drawerType == DrawerType.MapMeshAndRealTime)
 			{
 				this.parent.Map.mapDrawer.MapMeshDirty(this.parent.Position, MapMeshFlag.Things);
 			}
-
-			Mod_Perspective.offsetRegistry[this.parent.thingIDNumber] = (mirrored || currentOffset != Mod_Perspective.zero) ? this : null;
         }
 
 		public override IEnumerable<Gizmo> CompGetGizmosExtra()
@@ -109,8 +116,9 @@ namespace Perspective
 		}
 		private bool resetNext = false;
 		private int index = 0;
-        public Vector3 currentOffset = new Vector3(0,0,0);
-		public bool isOffset = false;
-		public bool mirrored = false;
+        public Vector3 currentOffset = zero;
+		public Vector3 cachedTrueCenter = zero;
+		public bool isOffset = false; //Notes that the thing is in the registry because it's offset, in case it's only in the registry because it's mirrored
+		public bool isMirrored = false;
 	}
 }
