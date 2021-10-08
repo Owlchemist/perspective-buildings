@@ -48,10 +48,6 @@
       <HintPath>..\..\packages\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Experimental.Collections">
-      <HintPath>..\..\packages\Microsoft.Experimental.Collections.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="*.cs" />

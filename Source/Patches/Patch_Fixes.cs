@@ -47,4 +47,14 @@ namespace Perspective
             }
         }
     }
+
+    //Pawns in bed follow position
+    [HarmonyPatch(typeof(Game), nameof(Game.LoadGame))]
+	public class Patch_LoadGame
+	{
+        static void Prefix()
+		{
+            offsetRegistry.Clear();
+        }
+    }
 }
