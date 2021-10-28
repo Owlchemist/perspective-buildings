@@ -5,19 +5,23 @@ using Verse.Sound;
 using System.Linq;
 using RimWorld;
 using static Perspective.ResourceBank;
-
+using static Perspective.TextureBank;
 
 namespace Perspective
 {
 	public class CompOffsetter : ThingComp
 	{
 		public Offsetter Props;
+		private int index;
+        public Vector3 currentOffset, cachedTrueCenter;
+		public bool isOffset, isMirrored, resetNext;
+		Command_Action adjustGizmo, mirrorGizmo;
 
 		public override void Initialize(CompProperties props)
 		{
 			base.Initialize(props);
 
-			//Modextensoins will be impersonating CompProperties, basically
+			//Modextensions will be impersonating CompProperties, basically
 			if (this.parent.def.HasModExtension<Offsetter>()) Props = this.parent.def.GetModExtension<Offsetter>();
 		}
 
@@ -31,14 +35,34 @@ namespace Perspective
 		{
 			if (Props != null)
 			{
-				Scribe_Values.Look<bool>(ref this.resetNext, "resetNext", false, false);
-				Scribe_Values.Look<bool>(ref this.isMirrored, "mirrored", false, false);
-				Scribe_Values.Look<int>(ref this.index, "index", 0, false);
-				Scribe_Values.Look<Vector3>(ref this.currentOffset, "currentOffset", new Vector3(0,0,0), false);
+				Scribe_Values.Look<bool>(ref resetNext, "resetNext", false, false);
+				Scribe_Values.Look<bool>(ref isMirrored, "mirrored", false, false);
+				Scribe_Values.Look<int>(ref index, "index", 0, false);
+				Scribe_Values.Look<Vector3>(ref currentOffset, "currentOffset", new Vector3(0,0,0), false);
 
 				UpdateRegistry();
 				if (currentOffset != zero) isOffset = true;
 			}
+
+			//Cache gizmos
+			adjustGizmo = new Command_Action()
+			{
+				defaultLabel = "Owl_Adjust".Translate(),
+				defaultDesc = "Owl_AdjustDesc".Translate(),
+				icon = iconAdjust,
+				action = () => SetCurrentOffset()
+			};
+
+			mirrorGizmo = new Command_Action()
+			{
+				defaultLabel = "Owl_Mirror".Translate(),
+				defaultDesc = "Owl_MirrorDesc".Translate(),
+				icon = iconMirror,
+				action = () => SetMirroredState()
+			};
+
+			//Validate index
+			if (index > Props.offsets.Count) index = 0;
 		}
 
 		public void UpdateRegistry()
@@ -68,7 +92,7 @@ namespace Perspective
 			}
 
 			//Reset the index if we've reached the end
-			if (index > Props.offsets.Count() - 1) resetNext = true;
+			if (index > Props.offsets.Count - 1) resetNext = true;
 
 			UpdateRegistry();
 			if (this.parent.def.drawerType == DrawerType.MapMeshOnly || this.parent.def.drawerType == DrawerType.MapMeshAndRealTime)
@@ -93,32 +117,14 @@ namespace Perspective
             if (Props != null && this.parent?.Faction != null && this.parent.Faction.IsPlayer)
             {
                 // Adjust
-                yield return new Command_Action()
-                {
-                    defaultLabel = "Owl_Adjust".Translate(),
-                    defaultDesc = "Owl_AdjustDesc".Translate(),
-					icon = ContentFinder<Texture2D>.Get("UI/Owl_Adjust", false),
-                    action = () => SetCurrentOffset()
-                };
+                yield return adjustGizmo;
 
                 // Mirror
                 if ((!this.parent.def.rotatable && this.Props.mirror != Offsetter.Override.False) || (this.parent.def.rotatable && this.Props.mirror == Offsetter.Override.True))
                 {
-                    yield return new Command_Action()
-                    {
-                    	defaultLabel = "Owl_Mirror".Translate(),
-						defaultDesc = "Owl_MirrorDesc".Translate(),
-						icon = ContentFinder<Texture2D>.Get("UI/Owl_Mirror", false),
-                        action = () => SetMirroredState()
-                    };
+                    yield return mirrorGizmo;
                 }
             }
 		}
-		private bool resetNext = false;
-		private int index = 0;
-        public Vector3 currentOffset = zero;
-		public Vector3 cachedTrueCenter = zero;
-		public bool isOffset = false; //Notes that the thing is in the registry because it's offset, in case it's only in the registry because it's mirrored
-		public bool isMirrored = false;
 	}
 }

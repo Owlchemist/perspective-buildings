@@ -17,7 +17,7 @@ namespace Perspective
         {
             var codes = new List<CodeInstruction>(instructions);
             var count = codes.Count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 if (codes[i].opcode == OpCodes.Call && codes[i].operand as MethodInfo == AccessTools.Method(typeof(Graphic), nameof(Graphic.DrawOffset)))
                 {
@@ -27,7 +27,7 @@ namespace Perspective
                         new CodeInstruction(OpCodes.Ldarg_S, 4),
                         new CodeInstruction(OpCodes.Call, typeof(Patch_Print).GetMethod(nameof(Patch_Print.DrawPerspectiveOffset)))
                     });
-                    transpilerRan++;
+                    ++transpilerRan;
                     break;
                 }
             }
@@ -44,7 +44,7 @@ namespace Perspective
             var count = codes.Count;
             MethodInfo DrawPerspectiveMirror = AccessTools.Method(typeof(Patch_Print), nameof(Patch_Print.DrawPerspectiveMirror));
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 if (codes[i].opcode == OpCodes.Call && codes[i].operand as MethodInfo == AccessTools.Method(typeof(Graphic), nameof(Graphic.DrawOffset)))
                 {
@@ -60,7 +60,7 @@ namespace Perspective
                         new CodeInstruction(OpCodes.Stloc_0)
                         
                     });
-                    transpilerRan++;
+                    ++transpilerRan;
                     break;
                 }
             }
@@ -70,6 +70,7 @@ namespace Perspective
 
         public static void DrawPerspectiveOffset(ref Vector3 pos, Thing thing)
         {
+            CompOffsetter compBuffer;
             if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
             {
                 pos += compBuffer.currentOffset;
@@ -78,6 +79,7 @@ namespace Perspective
 
         public static bool DrawPerspectiveMirror(bool flag, Thing thing)
         {
+            CompOffsetter compBuffer;
             if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
             {
                 if (compBuffer.isMirrored) return true;

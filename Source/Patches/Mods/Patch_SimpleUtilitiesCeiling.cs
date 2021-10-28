@@ -51,6 +51,7 @@ namespace Perspective
 
 		static void Prefix(ref Vector3 loc, Thing thing)
 		{
+            CompOffsetter compBuffer;
             if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
             {
                 loc += compBuffer.currentOffset;
