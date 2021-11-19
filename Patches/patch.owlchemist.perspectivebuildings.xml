@@ -3,7 +3,13 @@
 	<Operation Class="PatchOperationSequence">
 		<operations>
 			<li MayRequire="dubwise.dubsbadhygiene" Class="PatchOperationAddModExtension">
-				<xpath>/Defs/ThingDef[defName="WindPump" or @Name="BasedCeilingFan" or defName="WaterTrough" or defName="BathtubStuff"]</xpath>
+				<xpath>/Defs/ThingDef[
+					defName="WindPump" or 
+					@Name="BasedCeilingFan" or 
+					defName="WaterTrough" or 
+					defName="BathtubStuff" or
+					defName="PetWaterBowl" or
+					defName="LogBoiler"]</xpath>
 				<value>
 					<li Class="Perspective.Offsetter" />
 				</value>
@@ -29,11 +35,9 @@
 				<xpath>/Defs/ThingDef[building and building[isSittable="true"]]</xpath>
 				<value>
 					<li Class="Perspective.Offsetter">
+						<offsetType>Four</offsetType>
 						<offsets>
-							<li>(0, 0, 0.2)</li>
-							<li>(0, 0, -0.2)</li>
-							<li>(0.2, -0.05, 0)</li>
-							<li>(-0.2, -0.05, 0)</li>
+							<li>(0.2, -0.1, 0.2)</li>
 						</offsets>
 					</li>
 				</value>

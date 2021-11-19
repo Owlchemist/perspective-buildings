@@ -15,17 +15,10 @@ namespace Perspective
 
         static bool Prepare()
         {
-            Type type;
+           ModContentPack mod = LoadedModManager.RunningMods.FirstOrDefault(m => m.Name == "Simple Utilities: Ceiling");
+           if (mod == null) return false;
 
-            var mod = LoadedModManager.RunningMods.FirstOrDefault(m => m.Name == "Simple Utilities: Ceiling");
-            if (mod == null)
-			{
-                return false;
-            }
-
-            type = mod.assemblies.loadedAssemblies
-                        .FirstOrDefault(a => a.GetName().Name == "CeilingUtilities")?
-                        .GetType("CeilingUtilities.Graphic_FlickerMulti");
+           Type type = mod.assemblies.loadedAssemblies.FirstOrDefault(a => a.GetName().Name == "CeilingUtilities")?.GetType("CeilingUtilities.Graphic_FlickerMulti");
 
             if (type == null)
 			{
@@ -51,11 +44,7 @@ namespace Perspective
 
 		static void Prefix(ref Vector3 loc, Thing thing)
 		{
-            CompOffsetter compBuffer;
-            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
-            {
-                loc += compBuffer.currentOffset;
-            }
+            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out CompOffsetter compBuffer)) loc += compBuffer.currentOffset;
         }
     }
 }

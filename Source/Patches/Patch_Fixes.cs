@@ -13,9 +13,7 @@ namespace Perspective
         static Vector3 Postfix(Vector3 __result, Pawn ___pawn)
 		{
             var bed = ___pawn.CurrentBed();
-            CompOffsetter compBuffer;
-            if (bed != null && offsetRegistry.TryGetValue(bed.thingIDNumber, out compBuffer) && compBuffer.isOffset) __result += compBuffer.currentOffset;
-            return __result;
+            return (bed != null && offsetRegistry.TryGetValue(bed.thingIDNumber, out CompOffsetter compBuffer) && compBuffer.isOffset) ? __result += compBuffer.currentOffset : __result;
         }
     }
 
@@ -25,10 +23,9 @@ namespace Perspective
 	{
         static bool Prefix(Thing thing, ShadowData ___shadowInfo, SectionLayer layer, float ___GlobalShadowPosOffsetX, float ___GlobalShadowPosOffsetZ)
         {
-            CompOffsetter compBuffer;
-            if (offsetRegistry.TryGetValue(thing.thingIDNumber, out compBuffer))
+            if (offsetRegistry.TryGetValue(thing.thingIDNumber, out CompOffsetter compBuffer) && compBuffer.isOffset)
             {    
-                Vector3 center = compBuffer.cachedTrueCenter + (___shadowInfo.offset + new Vector3(___GlobalShadowPosOffsetX, 0f, ___GlobalShadowPosOffsetZ)).RotatedBy(thing.Rotation);
+                Vector3 center = compBuffer.cachedTrueCenter + compBuffer.currentOffset + (___shadowInfo.offset + (new Vector3(___GlobalShadowPosOffsetX, 0f, ___GlobalShadowPosOffsetZ)).RotatedBy(thing.Rotation));
                 center.y = AltitudeLayer.Shadows.AltitudeFor();
                 Printer_Shadow.PrintShadow(layer, center, ___shadowInfo, thing.Rotation);
                 return false;
@@ -43,11 +40,7 @@ namespace Perspective
 	{
         static void Prefix(ref Vector3 loc, Thing thing)
 		{
-            CompOffsetter compBuffer;
-            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
-            {
-                loc += compBuffer.currentOffset;
-            }
+            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out CompOffsetter compBuffer)) loc += compBuffer.currentOffset;
         }
     }
 

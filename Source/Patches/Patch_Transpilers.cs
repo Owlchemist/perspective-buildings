@@ -70,21 +70,12 @@ namespace Perspective
 
         public static void DrawPerspectiveOffset(ref Vector3 pos, Thing thing)
         {
-            CompOffsetter compBuffer;
-            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
-            {
-                pos += compBuffer.currentOffset;
-            }
+            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out CompOffsetter compBuffer)) pos += compBuffer.currentOffset;
         }
 
         public static bool DrawPerspectiveMirror(bool flag, Thing thing)
         {
-            CompOffsetter compBuffer;
-            if (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out compBuffer))
-            {
-                if (compBuffer.isMirrored) return true;
-            }
-            return flag;
+            return (offsetRegistry.TryGetValue(thing?.thingIDNumber ?? 0, out CompOffsetter compBuffer) && compBuffer.isMirrored) ? true : flag;
         }
     }
 }

@@ -8,9 +8,9 @@ namespace Perspective
 	{
 		public Override mirror = Override.Normal;
 		public Override ignore = Override.Normal;
-		public List<Vector3> offsets;
 		public enum Override {Normal, True, False}
+		public List<Vector3> offsets;		
 		public OffsetType offsetType;
-		public enum OffsetType {Normal, Eight}
+		public enum OffsetType {Normal, Eight, Four}
 	}
 }
