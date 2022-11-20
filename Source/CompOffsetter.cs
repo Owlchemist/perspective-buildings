@@ -13,6 +13,7 @@ namespace Perspective
 		public Offsetter Props;
         public Vector3 currentOffset, cachedTrueCenter;
 		public bool isOffset, isMirrored;
+		Command_Action adjustGizmo, mirrorGizmo;
 
 		public override void Initialize(CompProperties props)
 		{
@@ -23,6 +24,21 @@ namespace Perspective
 
 			//Cache position
 			cachedTrueCenter = this.parent.TrueCenter();
+
+			adjustGizmo = new Command_Action()
+				{
+					defaultLabel = "Owl_Adjust".Translate(),
+					defaultDesc = "Owl_AdjustDesc".Translate(),
+					icon = iconAdjust,
+					action = () => SetCurrentOffset()
+				};
+			mirrorGizmo = new Command_Action()
+				{
+					defaultLabel = "Owl_Mirror".Translate(),
+					defaultDesc = "Owl_MirrorDesc".Translate(),
+					icon = iconMirror,
+					action = () => SetMirroredState()
+				};
 		}
 
 		public override void PostDeSpawn(Map map)
@@ -80,24 +96,12 @@ namespace Perspective
             if (Props != null && (this.parent?.Faction?.IsPlayer ?? false))
             {
                 // Adjust
-                yield return new Command_Action()
-				{
-					defaultLabel = "Owl_Adjust".Translate(),
-					defaultDesc = "Owl_AdjustDesc".Translate(),
-					icon = iconAdjust,
-					action = () => SetCurrentOffset()
-				};
+                yield return adjustGizmo;
 
                 // Mirror
                 if ((!this.parent.def.rotatable && Props.mirror != Offsetter.Override.False) || (this.parent.def.rotatable && Props.mirror == Offsetter.Override.True))
                 {
-                    yield return new Command_Action()
-					{
-						defaultLabel = "Owl_Mirror".Translate(),
-						defaultDesc = "Owl_MirrorDesc".Translate(),
-						icon = iconMirror,
-						action = () => SetMirroredState()
-					};
+                    yield return mirrorGizmo;
                 }
             }
 		}

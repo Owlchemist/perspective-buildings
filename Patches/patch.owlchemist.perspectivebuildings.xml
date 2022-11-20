@@ -44,6 +44,21 @@
 			</li>
 			<li Class="PatchOperationAddModExtension">
 				<success>Always</success>
+				<xpath>/Defs/ThingDef[defName="VitalsMonitor" or 
+					defName="Drape" or 
+					defName="Urn" or 
+					defName="PsychicEmanator"]</xpath>
+				<value>
+					<li Class="Perspective.Offsetter">
+						<offsetType>Four</offsetType>
+						<offsets>
+							<li>(0.2, 0, 0.2)</li>
+						</offsets>
+					</li>
+				</value>
+			</li>
+			<li Class="PatchOperationAddModExtension">
+				<success>Always</success>
 				<xpath>/Defs/ThingDef[defName="EndTable"]</xpath>
 				<value>
 					<li Class="Perspective.Offsetter">
